@@ -1,5 +1,7 @@
 (load "~/Documents/Programmes/Common Lisp/utilities/hashtable-utilities.lisp")
-(load "~/Documents/Programmes/Common Lisp/syntax/json-syntax.lisp")
+(load "~/Documents/Programmes/Common Lisp/prototype-object-system/json-object-syntax.lisp")
+
+;(load "~/Documents/Programmes/Common Lisp/syntax/json-syntax.lisp")
 #|
 This is an implementation of a prototype-based object system. In this system, "objects" are simply hashtable, properties being key-value pairs.
 
@@ -23,11 +25,6 @@ When an ancestor does possess that property, its value is returned.
 The root object *root-object* is the default prototype ancestor of every other object.
 As such, it contains basic utility methods and properties, such as a clone, print, to-string, hash and equality functions..
 |#
-
-(defpackage :prototype-object-system
-  (:use :common-lisp :hashtable-utils :json-syntax)
-  (:import-from :json-syntax :enable-dictionary-syntax)
-  (:import-from :hashtable-utils :print-hashtable))
 
 (in-package :prototype-object-system)
 
@@ -93,6 +90,16 @@ As such, it contains basic utility methods and properties, such as a clone, prin
 		  (property prototype key)
 		  (values Nil Nil)))))))
 
+(defmacro func (args &body body)
+  "Defines a method, i.e. an anonymous function that has an object in its lexical scope.
+The local function '(this property &optional value)' can be used as a getter/setter to this object(providing a value argument set the property to the value, otherwise the current value of the property is returned)"
+  `(lambda (self . ,args)
+     (declare (ignorable self))
+     (flet ((self (key &optional (value nil providedp)) (if providedp
+							    (property self key value)
+							    (property self key))))
+       ,@body)))
+
 
 (defparameter *root-object* {
   (:prototype nil)
@@ -137,16 +144,6 @@ As such, it contains basic utility methods and properties, such as a clone, prin
   (let ((new (make-object :prototype nil)))
     (prog1 new
       (set-prototype new object))))
-
-(defmacro func (args &body body)
-  "Defines a method, i.e. an anonymous function that has an object in its lexical scope.
-The local function '(this property &optional value)' can be used as a getter/setter to this object(providing a value argument set the property to the value, otherwise the current value of the property is returned)"
-  `(lambda ,(cons 'self args)
-     (declare (ignorable self))
-     (flet ((self (key &optional (value nil providedp)) (if providedp
-							    (property self key value)
-							    (property self key))))
-       ,@body)))
 
 (defun get-keys (object)
   (hashtable-utils::hashtable-keys object))
