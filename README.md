@@ -1,6 +1,6 @@
 # Common-Lisp-Prototype-Object-System
 ## A prototype object system à la JavaScript, in Common Lisp.
-An object is simply a hashtable. Keys can thus be keywords, symbols, strings or anything hashable(though keywords are prefered).
+An object is simply a hashtable, and properties and methods are simply key-value pairs. Keys can thus be keywords, symbols, strings or anything hashable(though keywords are prefered).
 To replace dot notation, a general property accessor(getter/setter) and a method call operator are defined.
 
 * function property: `(property object key &optional new-value)`
