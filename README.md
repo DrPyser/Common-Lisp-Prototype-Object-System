@@ -18,13 +18,15 @@ The macro `func` serves as syntactic sugar for method definition, as a replaceme
 which is equivalent to  
 `(property self key &optional value)`.
 
-A handful of other such functions are also defined:
+Inheritance is handled through the `:prototype` property, which acts as a parent. The delegation mechanism is implemented.
+
+Some other functions:
 
 * `(prototype-of object)`:returns the value of the 'prototype' property of 'object'.
-* `(from-prototype object)`:creates and return an empty object that contains only a property 'prototype' set to 'object'.
+* `(from-prototype object)`:creates and return an object that only contains a property 'prototype' set to 'object'.
 * `(add-to-prototype object key value)`: adds property 'key' of value 'value' to the prototype of 'object'.
 * `(set-prototype object prototype)`: set the prototype of 'object' to 'prototype'.
-* `(make-object &key (prototype *root-object*) properties)`: allows quick object creation. 'properties' is a list of key-value pairs.
+* `(ex-nihilo &rest properties)`: allows quick object creation from a list of key-value pairs. The resulting object's prototype is *root-object*.
 * `(call-from object method-name receiver &rest args)`: allows a method to be called from an object, but with a different receiver(i.e. 'self' value).
 A reader macro, implemented in the `:JSON-syntax` package, allows creation of objects/hashtables with a JSON-like syntax:
 
@@ -44,7 +46,7 @@ The root object `*root-object*` serves as a common ancestor to objects, and is u
 * `:clone`: returns a clone(1 level deep) of the receiver
 * `:equal`: provide an equality function for the receiver(defaults to `equal`).
 
-Any property and method can be redefined by an inheriting object.
+Any property and method can be redefined by a child object.
 
 A constructor object, a `defconstructor` macro as well as a `new` function are also defined, allowing JavaScript-like object constructors. The `defconstructor` macro defines a constructor object and a constructor function, and puts both in the symbol-value and symbol-function slots of the constructor's name symbol. 
 
