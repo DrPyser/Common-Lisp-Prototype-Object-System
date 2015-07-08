@@ -132,18 +132,16 @@ The local function '(this property &optional value)' can be used as a getter/set
   "Sets the :prototype property of 'object' to 'prototype'."
   (property object :prototype prototype))
 
-(defun make-object (&key (prototype *root-object*) properties)
-  (let ((new-object {}))
-    (prog1 new-object
-      (mapc (lambda (pair) (destructuring-bind (k v) pair (property new-object k v)))
-	    properties)
-      (set-prototype new-object prototype))))
+(defun ex-nihilo (&rest properties)
+  "Creates a new object whose prototype is *root-object*, with initial properties defined by key-value pairs."
+  (let ((new (from-prototype *root-object*)))
+    (dolist (pair properties new)
+      (destructuring-bind (key value) pair
+	(property new key value)))))
 
 (defun from-prototype (object)
-  "Creates a new (empty) object whose :prototype property is set to 'object'."
-  (let ((new (make-object :prototype nil)))
-    (prog1 new
-      (set-prototype new object))))
+  "Creates a new object whose :prototype property is set to 'object'."
+  {(:prototype object)})
 
 (defun get-keys (object)
   (hashtable-utils::hashtable-keys object))
@@ -167,15 +165,15 @@ and calls it with 'receiver' and 'args' as its arguments."
 (defmacro defconstructor (name args &body body)
   "Defines a constructor object and a constructor function, each respectively bound to the symbol-value and symbol-function of the 'name' symbol.
 The constructor function creates an object, which can then be defined by the 'body' of the function, and finally return that object, with its prototype set to the constructor object's prototype."
-  `(let ((constructor-object (make-object :properties
-					  (list (list :name ',name)
-						(list :args ',args)
-						(list :body ',body)
-						(list :documentation ,(if (stringp (car body)) (car body)))))))
+  `(let ((constructor-object (make-object)))
+     (property constructor-object :name ',name)
+     (property constructor-object :args ',args)
+     (property constructor-object :body ',body)
+     (property constructor-object :documentation ,(if (stringp (car body)) (car body)))
      (property constructor-object :constructor-function
-	       (lambda ,(cons 'self args)
-		 (flet ((self (key &optional value)
-			  (when value
+	       (lambda ,`(self . ,args)
+		 (flet ((self (key &optional (value nil valuep))
+			  (when valuep
 			    (property self key value))
 			  (property self key)))
 		   ,@body
@@ -195,4 +193,7 @@ The constructor function creates an object, which can then be defined by the 'bo
 (defun call-with (constructor-object receiver &rest args)
   (prog1 receiver
     (apply (property constructor-object :constructor-function) receiver args)))
+
+(defun constructor (object)
+  (property object :constructor))
 
