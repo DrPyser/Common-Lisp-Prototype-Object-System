@@ -1,4 +1,12 @@
 (load "~/Documents/Programmes/Common Lisp/prototype-object-system/prototype-object-system-package.lisp")
+
+#|
+This file defines reader macros to allow for a literal syntax for hashtables.
+
+{(:key value)} -> (let ((ht (make-hash-table))) (setf (gethash key ht) value))
+
+|#
+
 (in-package :prototype-object-system)
 
 (defvar *readtables-stack* nil)
