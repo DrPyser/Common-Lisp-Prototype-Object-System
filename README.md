@@ -57,13 +57,17 @@ A constructor object, a `defconstructor` macro as well as a `new` function are a
 The constructor object contains informations such as the name, arguments, and body of the constructor function, a reference to the function itself, and a prototype property which is also the prototype of the constructors "offsprings". A new object is constructed from the constructor using the `new` function on the constructor object.
 
 ```
-(new node 1) ;=>{prototype: {prototype: *root-object*, constructor: {...}}, value: 1,left: nil, rigth: nil,left: nil, right: nil}
-(property (new node 1) :constructor);=>{prototype:{prototype: *root-object*, 
-                                                   constructor: {...}}, 
-                                        args: (value &optional left right), 
-                                        body: ((self :value value) (self :left left) (self :right right)), 
-                                        name: node, 
-                                        constructor-function: #<CLOSURE (LAMBDA (SELF VALUE &OPTIONAL LEFT RIGHT)) {1006E1594B}>} 
+>(new node 1) 
+=>{prototype: {prototype: *root-object*, constructor: {...}},
+value: 1,left: nil, rigth: nil,left: nil, right: nil}
+>(property (new node 1) :constructor)
+=>{prototype:{prototype: *root-object*, 
+              constructor: {...}}, 
+              args: (value &optional left right), 
+              body: ((self :value value) (self :left left) (self :right right)), 
+              name: node, 
+              constructor-function: #<CLOSURE (LAMBDA (SELF VALUE &OPTIONAL LEFT RIGHT)) {1006E1594B}>
+} 
 ```
 Finally, the `call-with` function allows the constructor to be called with a different `self` reference(e.g. inside another constructor).
 ```
